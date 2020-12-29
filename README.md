@@ -1,21 +1,58 @@
-# uapp_admin
+### 首页
 
-> A Vue.js project
+未做
 
-## Build Setup
+# 系统管理
 
-``` bash
-# install dependencies
-npm install
+### 菜单管理
 
-# serve with hot reload at localhost:8080
-npm run dev
+已完成
 
-# build for production with minification
-npm run build
+### 角色管理
 
-# build for production and view the bundle analyzer report
-npm run build --report
-```
+已完成
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+### 管理员管理
+
+已完成
+
+# 商城管理
+
+## 商品分类
+
+已完成
+
+### 商品规格
+
+已完成
+
+### 商品管理
+
+已完成
+
+### 会员管理
+
+已完成
+
+### 轮播图管理
+
+已完成
+
+## 秒杀活动
+
+未做
+
+### 用户权限
+
+已完成
+
+### 表单验证
+
+未做
+
+
+
+
+
+
+

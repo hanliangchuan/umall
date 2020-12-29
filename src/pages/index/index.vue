@@ -15,18 +15,23 @@
           <!-- 首页 -->
           <el-menu-item index="/">
             <i class="el-icon-menu"></i>
-            <span slot="title">首页</span>
+            <span slot="title" @click="get">首页</span>
           </el-menu-item>
           <!-- 系统设置 -->
-          <el-submenu v-for="(item,index) in menulist" :key="item.id" :index="index+1+''">
-            <template slot="title">
-              <i :class="item.icon"></i>
-              <span>{{item.title}}</span>
-            </template>
-            <el-menu-item-group>
-              <el-menu-item v-for="i in item.children" :key="i.id" :index="i.url">{{i.title}}</el-menu-item>
-            </el-menu-item-group>
-          </el-submenu>
+          <div v-for="item in userInfo.menus" :key="item.id">
+            <!-- 判断有没有children -->
+            <el-menu-item v-if="!item.children" :index="item.url">{{item.title}}</el-menu-item>
+            <!-- 有目录，有菜单 -->
+            <el-submenu :index="item.id+''" v-if="item.children">
+              <template slot="title">
+                <i :class="item.icon"></i>
+                <span>{{item.title}}</span>
+              </template>
+              <el-menu-item-group>
+                <el-menu-item v-for="i in item.children" :key="i.id" :index="i.url">{{i.title}}</el-menu-item>
+              </el-menu-item-group>
+            </el-submenu>
+          </div>
         </el-menu>
       </el-aside>
       <el-container>
@@ -61,13 +66,21 @@ export default {
     this.getmenulist();
   },
   methods: {
+    get() {
+      console.log(this.userInfo);
+    },
     ...mapActions({
-      getmenulist: "getmenulist"
-    })
+      getmenulist: "getmenulist",
+      changeUser: "changeUser"
+    }),
+    logout() {
+      this.changeUser({}), this.$router.replace("login");
+    }
   },
   computed: {
     ...mapGetters({
-      menulist: "menulist"
+      menulist: "menulist",
+      userInfo: "userInfo"
     })
   }
 };

@@ -31,7 +31,6 @@
         <el-button type="primary" @click="add()" v-if="info.isadd">添加</el-button>
         <el-button type="primary" @click="edit()" v-else>编辑</el-button>
       </div>
-      {{list}}----{{idkey}}
     </el-dialog>
   </div>
 </template>
@@ -39,9 +38,18 @@
 <script>
 import { reqRoleinfo, reqRoleedit, reqRoleadd } from "../../../utils/http";
 import { successalert } from "../../../utils/alert";
+import { mapActions, mapGetters } from "vuex";
 export default {
   props: ["menuList", "info"],
+  computed: {
+    ...mapGetters({
+      userInfo: "userInfo"
+    })
+  },
   methods: {
+    ...mapActions({
+      changeUser: "changeUser"
+    }),
     // 清空样式
     empty() {
       this.list = {
@@ -67,14 +75,11 @@ export default {
           this.list = res.data.list;
           this.list.id = id;
           this.$refs.tree.setCheckedKeys(JSON.parse(this.list.menus));
-          // this.idkey = JSON.parse(this.list.menus);
         }
       });
     },
     //获取id值
     change() {
-      console.log(this.$refs.tree.getCheckedKeys());
-      this.idkey = this.$refs.tree.getCheckedKeys();
       this.list.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
     },
     //添加
@@ -94,6 +99,11 @@ export default {
       reqRoleedit(this.list).then(res => {
         if (res.data.code == 200) {
           successalert(res.data.msg);
+          if ((this.list.id = this.userInfo.roleid)) {
+            this.changeUser({});
+            this.$router.push("/login");
+            return;
+          }
           this.info.isshow = false;
           this.$emit("rolelist");
         }
@@ -110,7 +120,6 @@ export default {
         // 状态1正常，2禁用
         status: 1
       },
-      idkey: [],
       defaultProps: {
         children: "children",
         label: "title"

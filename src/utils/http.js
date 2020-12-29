@@ -2,13 +2,22 @@ import axios from "axios"
 import qs from "qs"
 import Vue from "vue"
 import { erroralert } from "./alert"
+import store from "../store"
+import router from "../router"
 // 生产环境
 let baseUrl = "/api"
 Vue.prototype.$pre = "http://localhost:3000"
 // 打包环境
 // let baseUrl = ""
 // Vue.prototype.$pre = ""
+//请求拦截
+axios.interceptors.request.use(config=>{
 
+    if(config.url!==baseUrl+"/api/login"){
+        config.headers.authorization=store.state.userInfo.token
+    }
+    return config
+})
 //响应拦截
 axios.interceptors.response.use(res => {
     if (res.data.list == null) {
@@ -20,6 +29,10 @@ axios.interceptors.response.use(res => {
     // 统一处理失败
     if (res.data.code !== 200) {
         erroralert(res.data.msg)
+    }
+    if(res.data.msg == "登录已过期或访问权限受限"){
+        store.dispatch("changeUser",{})
+        router.push("/login")
     }
     return res
 })

@@ -10,22 +10,18 @@
 </template>
 
 <script>
-import {resUserlogin} from "../../utils/http"
+import {mapActions} from "vuex"
 
-import {successalert} from "../../utils/alert"
 export default {
-  methods:{
-    login(){
-      resUserlogin(this.user).then(res=>{
-        if(res.data.code == 200) {
-          successalert(res.data.msg)
-          let user = JSON.stringify(res.data.list)
-          localStorage.setItem("user",user)
-          this.$router.push("/")
-        }
-      })
-    }
+
+methods:{
+  login(){
+    this.changeUser(this.user)
   },
+  ...mapActions({
+      changeUser:"changeUser"
+  })
+},  
   data(){
     return{
       user:{
@@ -34,7 +30,6 @@ export default {
       }
     }
   }
-
 };
 </script>
 
