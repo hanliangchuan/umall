@@ -29,6 +29,7 @@ export default {
     //点击添加
       willAdd(){
       this.info.isshow=true
+      this.info.isadd = true
     },
     //点击编辑
     edit(id){

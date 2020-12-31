@@ -88,7 +88,7 @@
         </el-form-item>
         <!-- 商品描述 -->
         <el-form-item label="商品描述" label-width="100px">
-          <div id="edit" ></div>
+          <div id="edit"></div>
         </el-form-item>
       </el-form>
       <!-- 添加删除 -->
@@ -178,6 +178,7 @@ export default {
         ...this.user,
         specsattr: JSON.stringify(this.user.specsattr)
       };
+    this.checkProps().then(()=>{
       reqGoodsadd(data).then(res => {
         if (res.data.code == 200) {
           successalert(res.data.msg);
@@ -185,7 +186,8 @@ export default {
           this.empty();
           this.$emit("init");
         }
-      });
+      })
+    })
     },
     //获取一条数据
     getOne(id) {
@@ -204,8 +206,8 @@ export default {
               this.specslist.filter(item => item.id == res.data.list.specsid)[0]
                 .attrs
             );
-          }else{
-              this.attributelist  = []
+          } else {
+            this.attributelist = [];
           }
           // 已选中的规格
           res.data.list.specsattr = JSON.parse(res.data.list.specsattr);
@@ -227,13 +229,18 @@ export default {
         ...this.user,
         specsattr: JSON.stringify(this.user.specsattr)
       };
-      reqGoodsedit(data).then(res => {
-        if (res.data.code == 200) {
-          this.cancel();
-          successalert(res.data.msg);
-          this.$emit("init");
-        }
-      });
+      if(data.specsattr == "[]"){
+        this.user.specsattr = ""
+      }
+      this.checkProps().then(()=>{
+        reqGoodsedit(data).then(res => {
+          if (res.data.code == 200) {
+            this.cancel();
+            successalert(res.data.msg);
+            this.$emit("init");
+          }
+        })
+      })
     },
     //获取图片信息
     changeImg(e) {
@@ -250,6 +257,52 @@ export default {
       let file = e.raw;
       this.imgUrl = URL.createObjectURL(file);
       this.user.img = file;
+    },
+    //验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if (this.user.first_cateid == "") {
+          erroralert("一级分类不能为空");
+          return;
+        }
+        if (this.user.second_cateid == "") {
+          erroralert("二级分类不能为空");
+          return;
+        }
+        if (this.user.goodsname == "") {
+          erroralert("商品名称不能为空");
+          return;
+        }
+        if (this.user.price == "") {
+          erroralert("价格不能为空");
+          return;
+        }
+        if (this.user.market_price == "") {
+          erroralert("市场价格不能为空");
+          return;
+        }
+        if (this.user.img == null) {
+          erroralert("图片不能为空");
+          return;
+        }
+        if (this.user.specsid == "") {
+          erroralert("商品规格不能为空");
+          return;
+        }
+        if (this.user.specsid == "") {
+          erroralert("商品规格不能为空");
+          return;
+        }
+        if (this.user.specsattr == "") {
+          erroralert("规格属性不能为空");
+          return;
+        }
+        if (this.user.description == "") {
+          erroralert("商品描述不能为空");
+          return;
+        }
+        resolve();
+      });
     }
   },
   data() {

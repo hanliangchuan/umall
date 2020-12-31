@@ -1,10 +1,10 @@
 <template>
   <div class="wrap">
     <div class="main">
-      <h1>登录</h1>
+   <h3 class="center">登录</h3>
     <el-input placeholder="请输入用户名" v-model="user.username" clearable></el-input>
     <el-input placeholder="请输入密码" v-model="user.password" clearable show-password></el-input>
-    <el-button type="primary" @click="login">登录</el-button>
+    <el-button class="center" type="primary" @click="login">登录</el-button>
     </div>
   </div>
 </template>
@@ -34,15 +34,25 @@ methods:{
 </script>
 
 <style scoped>
-.main{
-  width: 600px;
-  height: 400px;
-  margin: auto;
-  margin-top: 200px;
-  background: #fff;
+.wrap {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(to right, #553544, #433a52, #303d60);
 }
-.el-input{
-  margin:5px;
+.main {
+  width: 400px;
+  background: #ffffff;
+  padding: 20px;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 20px;
 }
-
+.el-input {
+  margin-top: 10px;
+}
+.center {
+  text-align: center;
+}
 </style>

@@ -15,7 +15,7 @@
           <!-- 首页 -->
           <el-menu-item index="/">
             <i class="el-icon-menu"></i>
-            <span slot="title" @click="get">首页</span>
+            <span slot="title">首页</span>
           </el-menu-item>
           <!-- 系统设置 -->
           <div v-for="item in userInfo.menus" :key="item.id">
@@ -36,7 +36,12 @@
       </el-aside>
       <el-container>
         <!-- 上边 -->
-        <el-header>Header</el-header>
+        <el-header>
+          <div class="header">
+            {{userInfo.username}}
+            <el-button type="danger" class="btn" @click="logout">退出</el-button>
+          </div>
+        </el-header>
 
         <!-- 主体 -->
         <el-main>
@@ -66,13 +71,11 @@ export default {
     this.getmenulist();
   },
   methods: {
-    get() {
-      console.log(this.userInfo);
-    },
     ...mapActions({
       getmenulist: "getmenulist",
       changeUser: "changeUser"
     }),
+    // 退出登录
     logout() {
       this.changeUser({}), this.$router.replace("login");
     }
@@ -87,6 +90,17 @@ export default {
 </script>
 
 <style scoped>
+.header {
+  line-height: 60px;
+  font-size: 25px;
+  position: relative;
+}
+.btn {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translate(0, -50%);
+}
 .el-aside {
   background: #20222a;
 }

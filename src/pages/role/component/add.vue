@@ -31,13 +31,14 @@
         <el-button type="primary" @click="add()" v-if="info.isadd">添加</el-button>
         <el-button type="primary" @click="edit()" v-else>编辑</el-button>
       </div>
+      {{list}}
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { reqRoleinfo, reqRoleedit, reqRoleadd } from "../../../utils/http";
-import { successalert } from "../../../utils/alert";
+import { successalert, erroralert } from "../../../utils/alert";
 import { mapActions, mapGetters } from "vuex";
 export default {
   props: ["menuList", "info"],
@@ -80,33 +81,55 @@ export default {
     },
     //获取id值
     change() {
+      if(this.$refs.tree.getCheckedKeys().length == 0){
+        this.list.menus = ""
+        return
+      }
       this.list.menus = JSON.stringify(this.$refs.tree.getCheckedKeys());
     },
     //添加
     add() {
-      reqRoleadd(this.list).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
-          this.info.isshow = false;
-          this.$emit("rolelist");
-          this.empty();
-        }
+      this.checkProps().then(() => {
+        reqRoleadd(this.list).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+            this.info.isshow = false;
+            this.$emit("rolelist");
+            this.empty();
+          }
+        });
       });
     },
 
     //编辑
     edit() {
-      reqRoleedit(this.list).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
-          if ((this.list.id = this.userInfo.roleid)) {
-            this.changeUser({});
-            this.$router.push("/login");
-            return;
+      this.checkProps().then(() => {
+        reqRoleedit(this.list).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+            if ((this.list.id == this.userInfo.roleid)) {
+              this.changeUser({});
+              this.$router.push("/login");
+              return;
+            }
+            this.info.isshow = false;
+            this.$emit("rolelist");
           }
-          this.info.isshow = false;
-          this.$emit("rolelist");
+        });
+      });
+    },
+    //验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if (this.list.rolename == "") {
+          erroralert("角色名不能为空");
+          return;
         }
+        if (this.list.menus == "") {
+          erroralert("权限不能为空");
+          return;
+        }
+        resolve();
       });
     }
   },

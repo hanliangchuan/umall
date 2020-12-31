@@ -1,8 +1,7 @@
 <template>
   <div>
-    <el-dialog :title="info.isadd?'添加分类':'编辑分类'" :visible.sync="info.isshow" @closed="cancel">
+    <el-dialog :title="info.isadd?'添加轮播图':'编辑轮播图'" :visible.sync="info.isshow" @closed="cancel">
       <el-form class="form" :model="user">
-
         <!-- 分类名称 -->
         <el-form-item label="标题" label-width="100px">
           <el-input v-model="user.title" autocomplete="off"></el-input>
@@ -38,7 +37,11 @@
 
 <script>
 import path from "path";
-import { reqBanneradd, reqBannerinfo, reqBanneredit } from "../../../utils/http";
+import {
+  reqBanneradd,
+  reqBannerinfo,
+  reqBanneredit
+} from "../../../utils/http";
 import { successalert, erroralert } from "../../../utils/alert";
 export default {
   //接收参数
@@ -63,20 +66,21 @@ export default {
     },
     //   添加
     add() {
-      reqBanneradd(this.user).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
-          this.cancel();
-          this.empty();
-          this.$emit("init");
-        }
-      });
+      this.checkProps().then(()=>{
+        reqBanneradd(this.user).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+            this.cancel();
+            this.empty();
+            this.$emit("init");
+          }
+        })
+      })
     },
     //获取一条数据
     getOne(id) {
       reqBannerinfo({ id: id }).then(res => {
         if (res.data.code == 200) {
-
           this.user = res.data.list;
           this.user.id = id;
           this.imgUrl = this.$pre + this.user.img;
@@ -85,13 +89,15 @@ export default {
     },
     //更新数据
     update() {
-      reqBanneredit(this.user).then(res => {
-        if (res.data.code == 200) {
-          this.cancel();
-          successalert(res.data.msg);
-          this.$emit("init");
-        }
-      });
+      this.checkProps().then(()=>{
+        reqBanneredit(this.user).then(res => {
+          if (res.data.code == 200) {
+            this.cancel();
+            successalert(res.data.msg);
+            this.$emit("init");
+          }
+        })
+      })
     },
     //获取图片信息
     changeImg(e) {
@@ -108,6 +114,20 @@ export default {
       let file = e.raw;
       this.imgUrl = URL.createObjectURL(file);
       this.user.img = file;
+    },
+    //验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if (this.user.title == "") {
+          erroralert("标题不能为空");
+          return;
+        }
+        if(this.user.img == null){
+          erroralert("图片不能为空")
+          return
+        }
+        resolve();
+      });
     }
   },
   data() {
@@ -131,6 +151,7 @@ export default {
   position: relative;
   overflow: hidden;
 }
+
 .avatar-uploader .el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
@@ -138,9 +159,11 @@ export default {
   position: relative;
   overflow: hidden;
 }
+
 .avatar-uploader .el-upload:hover {
   border-color: #409eff;
 }
+
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
@@ -149,6 +172,7 @@ export default {
   line-height: 178px;
   text-align: center;
 }
+
 .avatar {
   width: 178px;
   height: 178px;

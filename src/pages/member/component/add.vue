@@ -34,7 +34,7 @@
 <script>
 import path from "path";
 import { reqMemberinfo, reqMemberedit } from "../../../utils/http";
-import { successalert,erroralert } from "../../../utils/alert";
+import { successalert, erroralert } from "../../../utils/alert";
 export default {
   //接收参数
   props: ["info", "list"],
@@ -55,48 +55,57 @@ export default {
         status: 1
       };
     },
-    //改变密码
-    // changepass(){
-    //   if(this.password){
-    //     console.log("改变了 ")
-    //     this.user.password = this.password
-    //   }
-    // },
     //获取一条数据
     getOne(uid) {
       reqMemberinfo({ uid: uid }).then(res => {
         if (res.data.code == 200) {
           this.user = res.data.list;
-          this.user.password = ""
+          this.user.password = "";
         }
       });
     },
     //更新数据
     update() {
-      if(this.user.password.length == 0){
-        erroralert("密码不能为空")
-        return
-      }
-      reqMemberedit(this.user).then(res => {
-        if (res.data.code == 200) {
-          this.cancel();
-          successalert(res.data.msg);
-          this.$emit("init");
+      this.checkProps().then(()=>{
+        reqMemberedit(this.user).then(res => {
+          if (res.data.code == 200) {
+            this.cancel();
+            successalert(res.data.msg);
+            this.$emit("init");
+          }
+        })
+      })
+    },
+    //验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if (this.user.phone == "") {
+          erroralert("手机号不能为空");
+          return;
         }
+        if (this.user.nickname == "") {
+          erroralert("昵称不能为空");
+          return;
+        }
+        
+        if (this.user.password == "") {
+          erroralert("密码不能为空");
+          return;
+        }
+        resolve();
       });
     }
   },
   data() {
     return {
-      password:"",
+      password: "",
       user: {
         uid: "",
         nickname: "",
         phone: "",
         password: "",
         status: 1
-      },
-
+      }
     };
   }
 };

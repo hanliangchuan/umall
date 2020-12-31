@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="info.isadd?'添加分类':'编辑分类'" :visible.sync="info.isshow" @closed="cancel">
+    <el-dialog :title="info.isadd?'商品分类添加':'商品分类编辑'" :visible.sync="info.isshow" @closed="cancel">
       <el-form :model="user" class="form">
         <!-- 上级分类 -->
         <el-form-item label="上级分类" label-width="100px">
@@ -71,14 +71,16 @@ export default {
     },
     //   添加
     add() {
-      reqCateadd(this.user).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
-          this.cancel();
-          this.empty();
-          this.$emit("init");
-        }
-      });
+      this.checkProps().then(()=>{
+        reqCateadd(this.user).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+            this.cancel();
+            this.empty();
+            this.$emit("init");
+          }
+        })
+      })
     },
     //获取一条数据
     getOne(id) {
@@ -92,13 +94,15 @@ export default {
     },
     //更新数据
     update() {
-      reqCateedit(this.user).then(res => {
-        if (res.data.code == 200) {
-          this.cancel();
-          successalert(res.data.msg);
-          this.$emit("init");
-        }
-      });
+      this.checkProps().then(()=>{
+        reqCateedit(this.user).then(res => {
+          if (res.data.code == 200) {
+            this.cancel();
+            successalert(res.data.msg);
+            this.$emit("init");
+          }
+        })
+      })
     },
     //获取图片信息
     changeImg(e) {
@@ -115,7 +119,27 @@ export default {
       let file = e.raw;
       this.imgUrl = URL.createObjectURL(file);
       this.user.img = file;
-    }
+    },
+        //验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if(this.user.pid+"" == ""){
+          erroralert("上级分类不能为空")
+          return
+        }
+        if(this.user.catename == ""){
+          erroralert("分类名称不能为空")
+          return
+        }
+        if(this.user.pid !==0){
+          if(this.user.img == null){
+            erroralert("图片不能为空")
+            return
+          }
+        }
+        resolve();
+      });
+    },
   },
   data() {
     return {

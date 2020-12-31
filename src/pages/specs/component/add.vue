@@ -32,6 +32,7 @@
         <el-button type="primary" @click="add()" v-if="info.isadd">添加</el-button>
         <el-button type="primary" @click="edit()" v-else>编辑</el-button>
       </div>
+      {{list}}
     </el-dialog>
   </div>
 </template>
@@ -41,19 +42,6 @@ import { reqSpecsadd, reqSpecsinfo, reqSpecsedit } from "../../../utils/http";
 import { successalert, erroralert } from "../../../utils/alert";
 export default {
   props: ["info"],
-  //   方法
-  data() {
-    return {
-      isshow: false,
-      addInput: "",
-      attrs: [],
-      list: {
-        specsname: "",
-        attrs: "",
-        status: 1
-      }
-    };
-  },
   methods: {
     //新增属性
     addAttribute() {
@@ -88,18 +76,21 @@ export default {
     },
     //编辑确定
     edit() {
-      if (!this.list.attrs) {
-        erroralert("请添加属性");
-        return;
-      }
       this.list.attrs = JSON.stringify(this.attrs.map(item => item.value));
-      reqSpecsedit(this.list).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
-          this.empty();
-          this.$emit("getspecslist");
-          this.info.isshow = false;
-        }
+      console.log(this.list.attrs)
+      if (this.list.attrs == "[]") {
+        this.list.attrs = ""
+      }
+
+      this.checkProps().then(() => {
+        reqSpecsedit(this.list).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+            this.empty();
+            this.$emit("getspecslist");
+            this.info.isshow = false;
+          }
+        });
       });
     },
     // 获取一条管理员信息
@@ -120,15 +111,48 @@ export default {
     //用户添加
     add() {
       this.list.attrs = JSON.stringify(this.attrs.map(item => item.value));
-      reqSpecsadd(this.list).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
-          this.info.isshow = false;
-          this.empty();
-          this.$emit("getspecslist");
+      if(this.list.attrs == "[]"){
+        console.log("111")
+        this.list.attrs=""
+      }
+      this.checkProps().then(() => {
+        reqSpecsadd(this.list).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+            this.info.isshow = false;
+            this.empty();
+            this.$emit("getspecslist");
+          }
+        });
+      });
+    },
+    //验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if (this.list.specsname == "") {
+          erroralert("规格名称不能为空");
+          return;
         }
+        if (this.list.attrs == "") {
+          erroralert("需要新增规格属性");
+          return;
+        }
+        resolve();
       });
     }
+  },
+  //   方法
+  data() {
+    return {
+      isshow: false,
+      addInput: "",
+      attrs: [],
+      list: {
+        specsname: "",
+        attrs: "",
+        status: 1
+      }
+    };
   }
 };
 </script>

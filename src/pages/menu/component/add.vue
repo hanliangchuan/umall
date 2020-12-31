@@ -55,7 +55,8 @@
 <script>
 import { indexRoutes } from "../../../router/index";
 import { reqMenuadd, reqMenuinfo, reqMenuedit } from "../../../utils/http";
-import { successalert } from "../../../utils/alert";
+import { successalert ,erroralert} from "../../../utils/alert";
+
 export default {
   // 接收参数
   props: ["info", "list"],
@@ -103,29 +104,55 @@ export default {
     },
     //  菜单编辑//编辑
     edit(user) {
-      reqMenuedit(user).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
-          this.$emit("getlist");
-          this.info.isshow = false;
-          this.empty();
-        }
-      });
+      this.checkProps().then(()=>{
+        reqMenuedit(user).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+            this.$emit("getlist");
+            this.info.isshow = false;
+            this.empty();
+          }
+        })
+      })
     },
     //菜单添加
     add() {
-      reqMenuadd(this.user).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
+      this.checkProps().then(()=>{
+        reqMenuadd(this.user).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+          }
+          //隐藏
+          this.cancel();
+          //清空
+          this.empty();
+          //获取列表想·
+          this.$emit("getlist");
+        });
+      })
+    },
+        //验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if(this.user.title == ""){
+          erroralert("菜单名称不能为空")
+          return
         }
-        //隐藏
-        this.cancel();
-        //清空
-        this.empty();
-        //获取列表想·
-        this.$emit("getlist");
+        if(this.user.pid == 0){
+          if(this.user.icon == ""){
+            erroralert("图标不能为空")
+            return
+          }
+        }
+        if(this.user.pid !==0){
+          if(this.user.url == ""){
+            erroralert("菜单地址不能为空")
+            return
+          }
+        }
+        resolve();
       });
-    }
+    },
   },
 
   data() {

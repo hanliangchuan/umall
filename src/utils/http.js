@@ -421,8 +421,6 @@ export const reqSpecsdelete = (id) => {
 
 // ----------------------------商品管理--------------------------
 
-// 商品添加
-// 一坨参数
 export const reqGoodsadd = (obj) => {
     return axios({
         url: baseUrl + "/api/goodsadd",
@@ -474,3 +472,54 @@ export const reqGoodsdelete = (id) => {
         data: id
     })
 }
+
+
+// ----------------------------秒杀--------------------------
+
+// 秒杀添加
+export const reqSeckadd = (obj) => {
+    return axios({
+        url: baseUrl + "/api/seckadd",
+        method: "post",
+        data: qs.stringify(obj)
+    })
+}
+
+
+// 秒杀列表
+export const reqSecklist = () => {
+    return axios({
+        url: baseUrl + "/api/secklist",
+        method: "get"
+    })
+}
+
+// 秒杀获取一条
+export const reqSeckinfo = (id) => {
+    return axios({
+        url: baseUrl + "/api/seckinfo",
+        method: "get",
+        params: id
+    })
+}
+
+// 秒杀修改
+export const reqSeckedit= (obj) => {
+    return axios({
+        url: baseUrl + "/api/seckedit",
+        method: "post",
+        data: qs.stringify(obj)
+    })
+}
+
+//秒杀删除
+export const reqSeckdelete = (id) => {
+    return axios({
+        url: baseUrl + "/api/seckdelete",
+        method: "post",
+        data: id
+    })
+}
+
+
+

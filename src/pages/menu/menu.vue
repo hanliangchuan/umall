@@ -11,17 +11,12 @@ import vList from "./component/list.vue"
 import vAdd from "./component/add.vue";
 import { reqMenulist, reqMenudelete } from "../../utils/http";
 import { successalert } from "../../utils/alert";
-import { mapGetters, mapActions } from "vuex";
 export default {
   mounted() {
     this.getlist();
   },
   //方法
   methods: {
-    ...mapActions({
-      //获取列表
-      getmenulist: "getmenulist"
-    }),
     //添加
     add() {
       this.info.isshow = true;
@@ -36,7 +31,6 @@ export default {
     },
     //获取列表
     getlist1() {
-      this.getmenulist();
       this.getlist();
     },
     getlist() {
@@ -54,7 +48,6 @@ export default {
         if (res.data.code == 200) {
           successalert(res.data.msg);
           this.getlist();
-          this.getmenulist();
         }
       });
     }

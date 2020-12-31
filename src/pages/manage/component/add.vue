@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="info.isadd?'用户添加':'用户编辑'" :visible.sync="info.isshow" @close="closed">
+    <el-dialog :title="info.isadd?'管理员添加':'管理员编辑'" :visible.sync="info.isshow" @close="closed">
       <el-form :model="list">
         <!-- 所属角色 -->
         <el-form-item label="所属角色" label-width="100px">
@@ -18,7 +18,7 @@
           <el-input v-model="list.username" autocomplete="off"></el-input>
         </el-form-item>
         <!-- 密码 -->
-        <el-form-item label="密码" label-width="100px">
+        <el-form-item label="密码" placeholder="" label-width="100px">
           <el-input v-model="list.password" autocomplete="off"></el-input>
         </el-form-item>
 
@@ -40,7 +40,7 @@
 
 <script>
 import { resUseradd ,resUserinfo,resUseredit} from "../../../utils/http";
-import { successalert } from "../../../utils/alert";
+import { successalert, erroralert } from "../../../utils/alert";
 export default {
   props: ["rolelist", "info"],
 //   方法
@@ -62,12 +62,15 @@ export default {
     },  
     //编辑确定
     edit(){
+      this.checkProps().then(()=>{
         resUseredit(this.list).then(res=>{
             if(res.data.code == 200) {
                 successalert(res.data.msg)
                 this.empty()
+                this.info.isshow = false
             }
         })
+      })
     },
     // 获取一条管理员信息
     getOne(id){
@@ -79,13 +82,35 @@ export default {
     },
     //用户添加
     add() {
-      resUseradd(this.list).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
-          this.info.isshow = false;
-          this.empty()
-          this.$emit("getuserlist")
+      this.checkProps().then(()=>{
+        resUseradd(this.list).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+            this.info.isshow = false;
+            this.empty()
+            this.$emit("getuserlist")
+          }
+        })
+      })
+    },
+        //验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if (this.list.roleid == "") {
+          erroralert("角色不能为空");
+          return;
         }
+        if (this.list.username == "") {
+          erroralert("用户名不能为空");
+          return;
+        }
+        if(this.info.isadd){
+          if(this.list.password == ""){
+            erroralert("密码不能为空")
+            return
+          }
+        }
+        resolve();
       });
     }
   },
